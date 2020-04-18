@@ -2,13 +2,14 @@ package example.model
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
+import org.http4s.Uri
 
 case class Person(
     id: Int,
     email: String,
     firstName: String,
     lastName: String,
-    avatarLink: String
+    avatarLink: Option[Uri]
 )
 
 object Person {
@@ -20,12 +21,12 @@ object Person {
                 firstName <- c.downField("first_name").as[String]
                 lastName <- c.downField("last_name").as[String]
                 avatarLink <- c.downField("avatar").as[String]
-            } yield Person(id, email, firstName, lastName, avatarLink)
+            } yield Person(id, email, firstName, lastName, Uri.fromString(avatarLink).toOption)
     }
 
 case class Ad(
     company: String,
-    url: String,
+    url: Option[Uri],
     text: String
 )
 
@@ -36,7 +37,7 @@ object Ad {
                 company <- c.downField("company").as[String]
                 url <- c.downField("url").as[String]
                 text <- c.downField("text").as[String]    
-            } yield Ad(company, url, text)
+            } yield Ad(company, Uri.fromString(url).toOption, text) 
 }
 
 case class Page(

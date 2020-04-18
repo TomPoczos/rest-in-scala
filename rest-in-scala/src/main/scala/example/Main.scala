@@ -21,12 +21,11 @@ object Main extends IOApp {
   def uri(pageNum: Int) = Uri.unsafeFromString(f"https://reqres.in/api/users?page=${pageNum}")
 
   def run(args: List[String]): IO[ExitCode] =
-    BlazeClientBuilder[IO](global).resource.use(program(_)) *> IO(ExitCode.Success)
-
+    BlazeClientBuilder[IO](global).resource.use(program(_))
   def program(implicit client: Client[IO]) = 
     for {
       pages <- IO(new PageInterpreter[IO](uri))
       page <- pages.fetch(2)
       _ <- IO(println(page))
-    } yield IO()
+    } yield ExitCode.Success
 }
