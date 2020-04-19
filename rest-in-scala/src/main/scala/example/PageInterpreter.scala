@@ -16,12 +16,9 @@ import cats.effect.Sync
 class PageInterpreter[F[_]: Sync: Client](uri: Int => Uri) extends PageAlgebra[F] {
  
     implicit val pageDecoder = jsonOf[F, Page]
+    def fetch(pageNumber: Int): F[Page] = F.expect[Page](uri(pageNumber))
+}
 
-    def fetch(pageNumber: Int): F[Page] = F.expect[Page](uri(2))
-        // Request[F](
-        //     uri = baseURI,
-        //     // httpVersion = HttpVersion.`HTTP/2.0`,
-        // )
-        // method = Get
-    // );
+object PageInterpreter {
+    def apply[F[_]: Sync: Client](uri: Int => Uri) = new PageInterpreter[F](uri)
 }

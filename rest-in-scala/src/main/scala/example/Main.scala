@@ -18,14 +18,18 @@ object Main extends IOApp {
 
   implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
-  def uri(pageNum: Int) = Uri.unsafeFromString(f"https://reqres.in/api/users?page=${pageNum}")
+  def uri(pageNum: Int) = 
+    uri"https://reqres.in/api/users".withQueryParams(Map("page" -> pageNum))
 
   def run(args: List[String]): IO[ExitCode] =
-    BlazeClientBuilder[IO](global).resource.use(program(_))
-  def program(implicit client: Client[IO]) = 
+    BlazeClientBuilder[IO](global).resource.use(program(Sync[IO], _))
+
+  def program[F[_]: Sync: Client] = 
     for {
-      pages <- IO(new PageInterpreter[IO](uri))
-      page <- pages.fetch(2)
-      _ <- IO(println(page))
+      pages <- F.delay(PageInterpreter(uri))
+      page1 <- pages.fetch(1)
+      page2 <- pages.fetch(2)
+      _     <- F.delay(println(page1))
+      _     <- F.delay(println(page2))
     } yield ExitCode.Success
 }
