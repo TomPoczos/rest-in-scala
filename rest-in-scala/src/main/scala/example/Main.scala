@@ -32,7 +32,7 @@ object Main extends IOApp {
       season <- seasonFetcher.fetchSeason
       _ <- F.delay(println(f"AVERAGE RATING: ${ImdbStats.averageRating(season)}"))
       episodes <- season.episodes.map(_.id).traverse(seasonFetcher.fetchEpisodeDetails)
-      _ <- F.delay(println(f"MOST USED WORD: ${ImdbStats.mostUsedWord(episodes)}"))
+      _ <- F.delay(println(f"MOST USED WORD: ${ImdbStats.mostUsedWordsQuestion(episodes)}"))
       _ <- F.delay(println(f"TOTAL SEASON RUNTIME: ${ImdbStats.seasonRunTime(episodes)} minutes"))
     } yield ExitCode.Success
 
