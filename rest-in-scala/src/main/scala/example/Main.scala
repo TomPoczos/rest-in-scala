@@ -13,6 +13,8 @@ import org.http4s.client.Client
 import cats.effect.Sync
 import org.http4s._
 import org.http4s.implicits._
+import example.interpreters.ImdbInterpreter
+import example.stats.ImdbStats
 
 object Main extends IOApp {
 
@@ -24,12 +26,15 @@ object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] =
     BlazeClientBuilder[IO](global).resource.use(program(Sync[IO], _))
 
+    // def x(c: Client) = c.
+
   def program[F[_]: Sync: Client] = 
     for {
-      pages <- F.delay(PageInterpreter(uri))
-      page1 <- pages.fetch(1)
-      page2 <- pages.fetch(2)
-      _     <- F.delay(println(page1))
-      _     <- F.delay(println(page2))
+      seasonFetcher <- F.delay(new ImdbInterpreter)
+      season <- seasonFetcher.fetchSeason
+      _ <- F.delay(println(f"AVERAGE RATING: ${ImdbStats.averageRating(season)}"))
+      episodes <- season.episodes.map(_.id).traverse(seasonFetcher.fetchEpisodeDetails)
+      _ <- F.delay(println(f"MOST USED WORD: ${ImdbStats.mostUsedWord(episodes)}"))
+      _ <- F.delay(println(f"TOTAL SEASON RUNTIME: ${ImdbStats.seasonRunTime(episodes)} minutes"))
     } yield ExitCode.Success
 }

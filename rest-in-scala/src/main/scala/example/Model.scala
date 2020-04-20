@@ -4,6 +4,64 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import org.http4s.Uri
 
+case class EpisodeDetails(
+    title: String,
+    plot: String,
+    runTime: String
+)
+
+object EpisodeDetails {
+    implicit val EpisodeDetailsDecoder: Decoder[EpisodeDetails] =
+        (c: HCursor) => 
+            for {
+                title <- c.downField("Title").as[String]
+                plot <- c.downField("Plot").as[String]
+                runTime <- c.downField("Runtime").as[String]     
+            } yield EpisodeDetails(title, plot, runTime)
+}
+
+case class Season(
+    title: String,
+    season: String,
+    totalSeasons: String,
+    episodes: List[Episode],
+    response: String
+)
+
+object Season {
+    implicit val SeasonDecoder: Decoder[Season] = 
+        (c: HCursor) =>
+            for {
+                title <- c.downField("Title").as[String]
+                season <- c.downField("Season").as[String]
+                totalSeasons <- c.downField("totalSeasons").as[String]
+                episodes <- c.downField("Episodes").as[List[Episode]]
+                response <- c.downField("Response").as[String]
+            } yield Season(title, season, totalSeasons, episodes, response)
+}
+
+case class Episode(
+    title: String,
+    released: String,
+    episode: String,
+    imdbRating: String,
+    id: String
+)
+
+object Episode {
+    implicit val episodeDecoder: Decoder[Episode] = 
+        (c: HCursor) =>
+            for {
+                title <- c.downField("Title").as[String]
+                released <- c.downField("Released").as[String]
+                episode <- c.downField("Episode").as[String]
+                imdbRating <- c.downField("imdbRating").as[String]
+                id <- c.downField("imdbID").as[String]
+            } yield Episode(title, released, episode, imdbRating, id)
+}
+
+//////////////////////////////////////////////////////////////////
+
 case class Person(
     id: Int,
     email: String,
