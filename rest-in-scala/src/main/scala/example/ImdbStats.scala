@@ -13,11 +13,15 @@ object ImdbStats {
 
         // there are 2 words that are used most frequently across the entire season, 
         // "the" and "a" are both used 15 times (if I recall correctly)
-        // Therefore we need to check in which episode each of them is used most frequently.
-        // Hence the result:
 
-        // "a" is used most frequently in "Minimum viable product", 4 times
-        // "the" is used most frequently in "Proof of concept". also 4 times
+        // Therefore we need to check in which episode each of them is used most frequently.
+        
+        // However, each of these might also end up being used the same amount of time per plot 
+
+        // Hence the relatively complex resultresult:
+
+        // "a" is used 4 times per plot at most, this occurs in "Minimum viable product" and "Signaling Risk", 
+        // "the" is also used 4 times per plot at most, this occurs only in "Proof of concept"
     
         def mostUsedWordsOccurenceInPlot(plot: String, words: List[String]): List[(String, Int)] = 
             words
@@ -55,7 +59,11 @@ object ImdbStats {
             .groupBy { case (_, word, _) => word }
             .mapValues { 
                 _.map { case (title, word, numOfOccurences) => (title, numOfOccurences) }
-                 .maxBy { case (_, numOfOccurences) => numOfOccurences }
+                 .groupBy { case (_, numOfOccurences) => numOfOccurences}
+                 .mapValues { 
+                     _.map { case (title, _) => title }   
+                 }
+                 .maxBy { case (numOfOccurences, _) => numOfOccurences }
             }
             .toMap
     }
