@@ -50,16 +50,12 @@ object ImdbStats {
         episodes
             .map( ep => (ep.title, mostUsedWordsOccurenceInPlot(ep.plot, mostUsedWords(episodes))))
             .flatMap {case (title, results) => 
-                results.map {
-                    case (word, numOfOccurences) => (title, word, numOfOccurences)
-                }
+                results.map { case (word, numOfOccurences) => (title, word, numOfOccurences) }
             }
-            .groupBy(_._2)
-            .mapValues { listOfTitlesAndOccurences => 
-                listOfTitlesAndOccurences.map {
-                    case (title: String, word: String, numOfOccurences: Int) => (title, numOfOccurences)
-                }
-                .maxBy(_._2)
+            .groupBy { case (_, word, _) => word }
+            .mapValues { 
+                _.map { case (title, word, numOfOccurences) => (title, numOfOccurences) }
+                 .maxBy { case (_, numOfOccurences) => numOfOccurences }
             }
             .toMap
     }
