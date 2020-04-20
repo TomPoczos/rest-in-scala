@@ -26,8 +26,6 @@ object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] =
     BlazeClientBuilder[IO](global).resource.use(program(Sync[IO], _))
 
-    // def x(c: Client) = c.
-
   def program[F[_]: Sync: Client] = 
     for {
       seasonFetcher <- F.delay(new ImdbInterpreter)
@@ -37,4 +35,8 @@ object Main extends IOApp {
       _ <- F.delay(println(f"MOST USED WORD: ${ImdbStats.mostUsedWord(episodes)}"))
       _ <- F.delay(println(f"TOTAL SEASON RUNTIME: ${ImdbStats.seasonRunTime(episodes)} minutes"))
     } yield ExitCode.Success
+
+  def sums(l: List[Int]) = {
+    
+  }
 }
