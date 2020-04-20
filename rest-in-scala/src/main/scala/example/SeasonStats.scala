@@ -13,7 +13,7 @@ object ImdbStats {
 
         // there are 2 words that are used most frequently across the entire season, 
         // "the" and "a" are both used 15 times (if I recall correctly)
-        // Therefore we need to check which episode each of them is used most frequently.
+        // Therefore we need to check in which episode each of them is used most frequently.
         // Hence the result:
 
         // "a" is used most frequently in "Minimum viable product", 4 times
